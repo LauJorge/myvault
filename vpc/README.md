@@ -1,4 +1,4 @@
-# Simple VPC
+# Simple VPC mudule
 
 Configuration in this directory creates set of VPC resources which may be sufficient for development environment.
 
