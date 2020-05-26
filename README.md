@@ -87,7 +87,7 @@ Once the new build config runs successfully it will be uploaded into **Artifacto
 
   
 
-Stores the dynamic Jenkins' slave with Terraform image of a dynamic Jenkins' slave with Terraform and another with Packer.
+Stores the neccessary binaries to build and run a dynamic Jenkins' slave with Terraform and another agent with Packer.
 
   
 
@@ -106,58 +106,30 @@ The following binaries can be found on Artifactory:
   
 
 # Jenkins
-On a pipeline project, a job creates a dynamic slave with Terraform that runs the necessary commands to have the HA Vault infrastructure.
+A pipeline project runs the necessary commands to have the HA Vault infrastructure.
 
 #### Implementation
-
-  1.  **Create S3 bucket:** provides a backend for the cluster (VPC and certificates too) that will store the Terraform states. Job: ***S3_creation***
-
-  2.  **Create a VPC:** *--not actually needed--* provides VPC, subnets and necessary resources where the infrastructure is placed. Job: ***vpc_creation***
-
-  3.  **Create certificates**: provides pem keys and certificates required to create an AMI. Job: ***certificates_creation***
-
-  4.  **Create the AMI**: this image has Vault and Consul installed and configured. It's created with Packer. It requires a VPC and Subnet, as well as the certificates location. Job: **AMI_creation**
-
-  5.  **Create a cluster of Vault and Consul virtual machines on AWS**: provisioing of 3 Vault and 3 Consul EC2 and necessary resources for a HA Vault infrastructure. It requires the AMI id (must be update on the source code), VPC and subnets and S3 . Job: ***vault_infra***
-
-  6.  **Clean up**: all jobs have each destroy job, and there is a general destruction job for the entire infrastructure: Job: ***vault_destroy***
+1. **Create S3 bucket:** provides a backend for the cluster (VPC and certificates too) that will store the Terraform states. Job: [***S3_creation***](https://sage.fismobile.net/view/ITO-DevOps/job/Playpen/job/lau/job/s3_creation)
 
   
 
--  [https://sage.fismobile.net/view/ITO-DevOps/job/Playpen/job/lau/job/AMI_creation/](https://sage.fismobile.net/view/ITO-DevOps/job/Playpen/job/lau/job/AMI_creation/)
+2. **Create a VPC:** *--not actually needed--* provides VPC, subnets and necessary resources where the infrastructure is placed. Job: [***vpc_creation***](https://sage.fismobile.net/view/ITO-DevOps/job/Playpen/job/lau/job/vpc_creation)
 
   
 
--  [https://sage.fismobile.net/view/ITO-DevOps/job/Playpen/job/lau/job/certificates_creation/](https://sage.fismobile.net/view/ITO-DevOps/job/Playpen/job/lau/job/certificates_creation/)
+3. **Create certificates**: provides pem keys and certificates required to create an AMI. Job: [***certificates_creation***](https://sage.fismobile.net/view/ITO-DevOps/job/Playpen/job/lau/job/certificates_destroy)
 
   
 
--  [https://sage.fismobile.net/view/ITO-DevOps/job/Playpen/job/lau/job/certificates_destroy/](https://sage.fismobile.net/view/ITO-DevOps/job/Playpen/job/lau/job/certificates_destroy/)
+4. **Create the AMI**: this image has Vault and Consul installed and configured. It's created with Packer. It requires a VPC and Subnet, as well as the certificates location. Job: [**AMI_creation**](https://sage.fismobile.net/view/ITO-DevOps/job/Playpen/job/lau/job/AMI_creation)
 
   
 
--  [https://sage.fismobile.net/view/ITO-DevOps/job/Playpen/job/lau/job/s3_creation/](https://sage.fismobile.net/view/ITO-DevOps/job/Playpen/job/lau/job/s3_creation/)
+5. **Create a cluster of Vault and Consul virtual machines on AWS**: provisioing of 3 Vault and 3 Consul EC2 and necessary resources for a HA Vault infrastructure. It requires the AMI id, VPC and subnets and S3 . Job: [***vault_infra***](https://sage.fismobile.net/view/ITO-DevOps/job/Playpen/job/lau/job/vault_infra)
 
   
 
--  [https://sage.fismobile.net/view/ITO-DevOps/job/Playpen/job/lau/job/s3_destroy/](https://sage.fismobile.net/view/ITO-DevOps/job/Playpen/job/lau/job/s3_destroy/)
-
-  
-
--  [https://sage.fismobile.net/view/ITO-DevOps/job/Playpen/job/lau/job/vault_infra/](https://sage.fismobile.net/view/ITO-DevOps/job/Playpen/job/lau/job/vault_infra/)
-
-  
-
--  [https://sage.fismobile.net/view/ITO-DevOps/job/Playpen/job/lau/job/vault-destroy/](https://sage.fismobile.net/view/ITO-DevOps/job/Playpen/job/lau/job/vault-destroy/)
-
-  
-
--  [https://sage.fismobile.net/view/ITO-DevOps/job/Playpen/job/lau/job/vpc_creation/](https://sage.fismobile.net/view/ITO-DevOps/job/Playpen/job/lau/job/vpc_creation/)
-
-  
-
--  [https://sage.fismobile.net/view/ITO-DevOps/job/Playpen/job/lau/job/vpc_destroy/](https://sage.fismobile.net/view/ITO-DevOps/job/Playpen/job/lau/job/vpc_destroy/)
-
+6. **Clean up**: all jobs have each destroy job, and there is a general destruction job for the entire infrastructure: Job: [***vault_destroy***](https://sage.fismobile.net/view/ITO-DevOps/job/Playpen/job/lau/job/vault-destroy)
   
   
 
@@ -213,3 +185,9 @@ An autoscaling group with an IAM instance profile and security group rules are c
 When running in HA mode, Vault servers have two additional states: standby and active.
  Within a Vault cluster, only a single instance will be active and handles all requests (reads and writes) 
  and all standby nodes redirect requests to the active node.
+
+
+# References
+- https://github.com/hashicorp/terraform-aws-vault
+
+- https://learn.hashicorp.com/vault/day-one/ops-reference-architecture
