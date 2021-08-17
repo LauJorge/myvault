@@ -144,7 +144,7 @@ When running the Jenkins jobs, Terraform is used to create the infrastructure. I
 
 1. Clone the repository with the Terraform source code
 ```
-git clone https://bitbucket.mfoundry.net/users/maria.jorge/repos/vault-infra.git
+git clone https://github.com/LauJorge/myvault.git
 ```
 2. Initialize Terraform
 ```
